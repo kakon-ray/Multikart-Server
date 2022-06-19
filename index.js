@@ -4,7 +4,8 @@ const app = express();
 require("dotenv").config();
 var cors = require("cors");
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+var ObjectID = require("mongodb").ObjectID;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -48,7 +49,6 @@ async function run() {
     // start cartlist collection
     app.get("/cartlist", async (req, res) => {
       const email = req.query.email;
-      console.log(email);
       const cursor = cartCollection.find({ email: email });
       const allValues = await cursor.toArray();
       res.send(allValues);
@@ -58,29 +58,51 @@ async function run() {
       const result = await cartCollection.insertOne(data);
       res.send(result);
     });
+    app.delete("/cartlist", async (req, res) => {
+      const id = req.query.id;
+      const query = { _id: new ObjectID(id) };
+      const result = await cartCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // start wishlist collection
     app.get("/wishlist", async (req, res) => {
-      const cursor = wishlistCollection.find({});
+      const email = req.query.email;
+      const cursor = wishlistCollection.find({ email: email });
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
 
     app.post("/wishlist", async (req, res) => {
       const data = req.body;
-
       const result = await wishlistCollection.insertOne(data);
       res.send(result);
     });
+
+    app.delete("/wishlist/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectID(id) };
+      const deleteResult = await wishlistCollection.deleteOne(query);
+      res.send(deleteResult);
+    });
     // start comparelist collection
     app.get("/comparelist", async (req, res) => {
-      const cursor = comparelistCollection.find({});
+      const email = req.query.email;
+      const cursor = comparelistCollection.find({ email: email });
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
     app.post("/comparelist", async (req, res) => {
+      const data = req.body;
       const result = await comparelistCollection.insertOne(data);
       res.send(result);
+    });
+
+    app.delete("/comparelist/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectID(id) };
+      const deleteResult = await comparelistCollection.deleteOne(query);
+      res.send(deleteResult);
     });
 
     // checkout collection start

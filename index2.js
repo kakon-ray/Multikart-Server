@@ -4,7 +4,8 @@ const app = express();
 require("dotenv").config();
 var cors = require("cors");
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+var ObjectID = require("mongodb").ObjectID;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -23,13 +24,10 @@ app.use(bodyParser.json());
 // user: multicart_admin;
 // pass: UW9vTVSduGgNs0mt;
 
-const uri =
-  "mongodb+srv://multicart_admin:UW9vTVSduGgNs0mt@cluster0.fvzaz.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-});
+var uri =
+  "mongodb://multicart_admin:UW9vTVSduGgNs0mt@cluster0-shard-00-00.fvzaz.mongodb.net:27017,cluster0-shard-00-01.fvzaz.mongodb.net:27017,cluster0-shard-00-02.fvzaz.mongodb.net:27017/?ssl=true&replicaSet=atlas-es8feq-shard-0&authSource=admin&retryWrites=true&w=majority";
+
+const client = new MongoClient(uri);
 
 async function run() {
   try {
@@ -45,90 +43,66 @@ async function run() {
     app.get("/products", async (req, res) => {
       const cursor = collection.find({});
       const allValues = await cursor.toArray();
-      res.send(allValues);
+      const homepageValue = allValues.slice(0, 8);
+      res.send(homepageValue);
     });
     // start cartlist collection
     app.get("/cartlist", async (req, res) => {
-      const cursor = cartCollection.find({});
+      const email = req.query.email;
+      const cursor = cartCollection.find({ email: email });
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
     app.post("/cartlist", async (req, res) => {
       const data = req.body;
-      const name = data.name;
-      const supplierName = data.supplierName;
-      const price = data.price;
-      const quantity = data.quantity;
-      const text = data.text;
-      const img = data.img;
-      const img2 = data.img2;
-
-      const result = await cartCollection.insertOne({
-        name,
-        supplierName,
-        price,
-        quantity,
-        text,
-        img,
-        img2,
-      });
+      const result = await cartCollection.insertOne(data);
+      res.send(result);
+    });
+    app.delete("/cartlist", async (req, res) => {
+      const id = req.query.id;
+      const query = { _id: new ObjectID(id) };
+      const result = await cartCollection.deleteOne(query);
       res.send(result);
     });
 
     // start wishlist collection
     app.get("/wishlist", async (req, res) => {
-      const cursor = wishlistCollection.find({});
+      const email = req.query.email;
+      const cursor = wishlistCollection.find({ email: email });
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
 
     app.post("/wishlist", async (req, res) => {
       const data = req.body;
-      const name = data.name;
-      const supplierName = data.supplierName;
-      const price = data.price;
-      const quantity = data.quantity;
-      const text = data.text;
-      const img = data.img;
-      const img2 = data.img2;
-
-      const result = await wishlistCollection.insertOne({
-        name,
-        supplierName,
-        price,
-        quantity,
-        text,
-        img,
-        img2,
-      });
+      const result = await wishlistCollection.insertOne(data);
       res.send(result);
+    });
+
+    app.delete("/wishlist/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectID(id) };
+      const deleteResult = await wishlistCollection.deleteOne(query);
+      res.send(deleteResult);
     });
     // start comparelist collection
     app.get("/comparelist", async (req, res) => {
-      const cursor = comparelistCollection.find({});
+      const email = req.query.email;
+      const cursor = comparelistCollection.find({ email: email });
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
     app.post("/comparelist", async (req, res) => {
       const data = req.body;
-      const name = data.name;
-      const supplierName = data.supplierName;
-      const price = data.price;
-      const quantity = data.quantity;
-      const text = data.text;
-      const img = data.img;
-      const img2 = data.img2;
-
-      const result = await comparelistCollection.insertOne({
-        name,
-        supplierName,
-        price,
-        quantity,
-        text,
-        img,
-        img2,
-      });
+      const result = await comparelistCollection.insertOne(data);
       res.send(result);
+    });
+
+    app.delete("/comparelist/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectID(id) };
+      const deleteResult = await comparelistCollection.deleteOne(query);
+      res.send(deleteResult);
     });
 
     // checkout collection start
@@ -139,24 +113,7 @@ async function run() {
     });
 
     app.post("/checkout", async (req, res) => {
-      const data = req.body;
-      const name = data.name;
-      const supplierName = data.supplierName;
-      const price = data.price;
-      const quantity = data.quantity;
-      const text = data.text;
-      const img = data.img;
-      const img2 = data.img2;
-
-      const result = await checkoutCollection.insertOne({
-        name,
-        supplierName,
-        price,
-        quantity,
-        text,
-        img,
-        img2,
-      });
+      const result = await checkoutCollection.insertOne(data);
       res.send(result);
     });
 

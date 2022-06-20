@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
   let result;
 
   if (allValues.length > 0) {
-    console.log("already have this item");
+    return;
   } else {
     result = await cartCollection.insertOne(data);
     res.send(result);

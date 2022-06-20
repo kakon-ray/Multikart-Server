@@ -18,8 +18,18 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const data = req.body;
-  const result = await wishlistCollection.insertOne(data);
-  res.send(result);
+
+  const id = data.id;
+  const query = { id: id };
+  const cursor = wishlistCollection.find(query);
+  const allValues = await cursor.toArray();
+  let result;
+  if (allValues.length > 0) {
+    return;
+  } else {
+    result = await wishlistCollection.insertOne(data);
+    res.send(result);
+  }
 });
 
 router.delete("/:id", async (req, res) => {

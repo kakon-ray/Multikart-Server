@@ -18,14 +18,12 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const data = req.body;
+
   const id = data.id;
-
   const query = { id: id };
-
   const cursor = cartCollection.find(query);
   const allValues = await cursor.toArray();
   let result;
-
   if (allValues.length > 0) {
     return;
   } else {

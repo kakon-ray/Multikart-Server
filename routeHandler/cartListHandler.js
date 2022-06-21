@@ -18,18 +18,8 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const data = req.body;
-
-  const id = data.id;
-  const query = { id: id };
-  const cursor = cartCollection.find(query);
-  const allValues = await cursor.toArray();
-  let result;
-  if (allValues.length > 0) {
-    return;
-  } else {
-    result = await cartCollection.insertOne(data);
-    res.send(result);
-  }
+  let result = await cartCollection.insertOne(data);
+  res.send(result);
 });
 
 router.delete("/", async (req, res) => {

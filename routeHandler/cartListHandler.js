@@ -16,6 +16,7 @@ router.get("/", async (req, res) => {
   res.send(allValues);
 });
 
+// Post cartlist
 router.post("/", async (req, res) => {
   const data = req.body;
   let result = await cartCollection.insertOne(data);

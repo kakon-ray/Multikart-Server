@@ -23,6 +23,18 @@ router.post("/", async (req, res) => {
   res.send(result);
 });
 
+// Update cartlist checkbox
+router.patch("/", async (req, res) => {
+  const value = req.query.id;
+  const id = value[1];
+  const checkBox = value[0];
+
+  const query = { _id: new ObjectId(id) };
+  const update = { $set: { check: checkBox } };
+  const options = { upsert: true };
+  const result = cartCollection.updateOne(query, update, options);
+});
+
 router.delete("/", async (req, res) => {
   const id = req.query.id;
   const query = { _id: new ObjectID(id) };

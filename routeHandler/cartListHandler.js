@@ -35,6 +35,15 @@ router.patch("/", async (req, res) => {
   const result = cartCollection.updateOne(query, update, options);
 });
 
+// Update cartlist checkbox
+router.put("/", async (req, res) => {
+  const value = req.query.id;
+  const query = {};
+  const update = { $set: { check: value } };
+  const options = { upsert: true };
+  const result = cartCollection.updateMany(query, update, options);
+});
+
 router.delete("/", async (req, res) => {
   const id = req.query.id;
   const query = { _id: new ObjectID(id) };

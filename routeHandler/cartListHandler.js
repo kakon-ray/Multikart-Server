@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
   res.send(result);
 });
 
-// Update cartlist checkbox and quantity
+// Update cartlist checkbox
 router.patch("/", async (req, res) => {
   const value = req.query.id;
   const id = value[1];
@@ -33,6 +33,25 @@ router.patch("/", async (req, res) => {
   const update = { $set: { check: checkBox } };
   const options = { upsert: true };
   const result = cartCollection.updateOne(query, update, options);
+  res.send(result);
+});
+// Update cartlist  quantity
+router.patch("/quantity", async (req, res) => {
+  const value = req.body;
+
+  const id = value.id;
+  let quantity = parseInt(value.value);
+
+  const findquery = { _id: new ObjectId(id) };
+  const cursor = await cartCollection.find(findquery);
+  let dbArray = await cursor.toArray();
+  let totalPriceResult = Number(dbArray[0].price) * quantity;
+
+  const query = { _id: new ObjectId(id) };
+  const update = { $set: { quantity: quantity, totalPrice: totalPriceResult } };
+  const options = { upsert: true };
+  const result = await cartCollection.updateOne(query, update, options);
+  res.send(result);
 });
 
 // Update cartlist checkbox
@@ -42,6 +61,7 @@ router.put("/", async (req, res) => {
   const update = { $set: { check: value } };
   const options = { upsert: true };
   const result = cartCollection.updateMany(query, update, options);
+  res.send(result);
 });
 
 router.delete("/", async (req, res) => {

@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
   res.send(result);
 });
 
-// Update cartlist checkbox
+// Update cartlist checkbox and quantity
 router.patch("/", async (req, res) => {
   const value = req.query.id;
   const id = value[1];

@@ -49,8 +49,7 @@ router.patch("/quantity", async (req, res) => {
 
   const query = { _id: new ObjectId(id) };
   const update = { $set: { quantity: quantity, totalPrice: totalPriceResult } };
-  const options = { upsert: true };
-  const result = await cartCollection.updateOne(query, update, options);
+  const result = await cartCollection.updateOne(query, update);
   res.send(result);
 });
 
